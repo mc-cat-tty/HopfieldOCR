@@ -1,0 +1,4 @@
+mypy==1.4.1
+mypy-extensions==1.0.0
+numpy==1.25.1
+typing_extensions==4.7.1
