@@ -1,0 +1,2 @@
+# Hopfield OCR
+Hopfield network implementation + visualization of its energy landscape as seen in Artificial Systems module ([https://github.com/mc-cat-tty/SistemiArtificiali/](https://github.com/mc-cat-tty/SistemiArtificiali/))
