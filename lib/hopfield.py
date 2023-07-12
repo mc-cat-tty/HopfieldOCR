@@ -1,4 +1,6 @@
 from enum import Enum
+from typing import Iterator
+import random
 import numpy as np
 import scipy.linalg as la
 
@@ -14,10 +16,11 @@ class HopfieldNet:
     # Below's matrix main diagional will always be zero since autoinhibition
     # and autoactivation are prohibited; moreover must be symmetric
     self.nodeWeights: np.ndarray = np.zeros((nodesNumber, nodesNumber))
-    self.nodeValues: np.ndarray = np.zeros((nodesNumber, 1))
+    self.nodeValues: np.ndarray = np.zeros((1, nodesNumber))
     self.prevEnergy: float = 0.0
     self.nodesNumber: int = nodesNumber
     self.mode = NetworkMode.INFER
+    self.safeguardCounter = 0
 
   def __iter__(self):
     return self
@@ -25,10 +28,48 @@ class HopfieldNet:
   def __next__(self):
     self.checkPlausibility()
 
-    if self.isStuckInAttractor():
-      raise StopIteration("Stuck in an attractor")
+    if self.mode == NetworkMode.INFER:
+      self.__inferStep() 
+    elif self.mode == NetworkMode.LEARN:
+      self.__learnStep()
+    
+  def __inferStep(self):
+    """
+    Freely run the network (with clamped weights) until it coverges to an attractor
+    """
+    updatingNodeIdx = np.random.randint(self.nodesNumber)
+    self.nodeValues[0][updatingNodeIdx] = np.heaviside(
+      self.computeInputValue(updatingNodeIdx),
+      0
+    )
+    
 
-    return
+    if self.isStuckInAttractor():
+      self.safeguardCounter += 1
+    
+    safeguardThresholdCoefficient = 3
+    if self.safeguardCounter >= self.nodesNumber*safeguardThresholdCoefficient:
+      raise StopIteration("Stuck in an attractor")
+  
+  def __learnStep(self):
+    """
+    Hebbian learning rule for binary nodes
+    """
+    i, j = self.learningIndicesIterator.__next__()
+    if i != j:
+      self.nodeWeights[i][j] += (2*self.nodeValues[0][i] - 1) * (2*self.nodeValues[0][j] - 1)
+      self.nodeWeights[j][i] += (2*self.nodeValues[0][i] - 1) * (2*self.nodeValues[0][j] - 1)
+  
+  def __learningIndicesGenerator(self) -> Iterator:
+    for i in range(self.nodesNumber):
+      for j in range(self.nodesNumber):
+        yield i, j
+  
+  def __runIndexGenerator(self) -> Iterator:
+    indices = list(range(self.nodesNumber))
+    random.shuffle(indices)
+    for i in indices:
+      yield i
 
   def withPattern(self, pattern: np.matrix):
     self.nodeValues = np.array(pattern)
@@ -40,12 +81,17 @@ class HopfieldNet:
     INFER mode will clamp node weigths and will update exclusively value (stochastic updating)
     """
     self.mode = mode
+    self.safeguardCounter = 0
+
+    if self.mode == NetworkMode.LEARN:
+      self.learningIndicesIterator = self.__learningIndicesGenerator()
+    
     return self
 
   def isStuckInAttractor(self) -> bool:
     """
-    Whenever energy is the same for 2 consecutive iterations
-    the network reached a potential energy well (local minimum)
+    Whenever energy is the same for 2 consecutive iterations the
+    network may have reached a potential energy well (local minimum)
     """
     currentEnergy: float = self.computeEnergy()
     if self.prevEnergy == currentEnergy:
@@ -56,7 +102,7 @@ class HopfieldNet:
 
   def checkPlausibility(self) -> None:
     """
-    Weights matrix must respect the constraints described above
+    Weights matrix must respect the constraints described above (see constructor method)
     """
     assert(
       all(np.diag(self.nodeWeights) == 0)
@@ -76,7 +122,7 @@ class HopfieldNet:
     return - np.sum(weightedPartialProducts)
     
   def computeInputValues(self) -> np.ndarray:
-    return self.nodeValues.T @ self.nodeWeights
+    return self.nodeValues @ self.nodeWeights
   
   def computeInputValue(self, nodeIdx: int) -> float:
-    return self.nodeValues.T @ self.nodeWeights[nodeIdx]
+    return self.nodeValues @ self.nodeWeights[nodeIdx]
