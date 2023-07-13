@@ -99,6 +99,9 @@ class DemoNN(Scene):
     )
     self.wait()
 
+    inputValue = Text(f"Neuron {0} input value: {10}", font_size=30).next_to(code, DOWN)
+    self.add(inputValue)
+
     self.hopfieldNet.withMode(NetworkMode.INFER).withPattern(
       [[
         1, 0, 0,
@@ -107,7 +110,17 @@ class DemoNN(Scene):
       ]]
     )
     for idx in self.hopfieldNet:  # Inferring
-      self.play(Flash(self.g.vertices[f"a{idx}"], flash_radius = 0.6))
+      inputVal = int(self.hopfieldNet.computeInputValue(idx)[0])
+      self.play(
+        Flash(self.g.vertices[f"a{idx}"], flash_radius = 0.6),
+        Transform(
+          inputValue,
+          Text(
+            f"Neuron {idx} input value: {'+' if inputVal >= 0 else ''}{inputVal}",
+            font_size=30
+          ).next_to(code, DOWN)
+        )
+      )
       self.updateGraph()
       self.wait()
   
