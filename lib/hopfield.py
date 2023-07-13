@@ -29,9 +29,9 @@ class HopfieldNet:
     self.checkPlausibility()
 
     if self.mode == NetworkMode.INFER:
-      self.__inferStep() 
+      return self.__inferStep() 
     elif self.mode == NetworkMode.LEARN:
-      self.__learnStep()
+      return self.__learnStep()
     
   def __inferStep(self):
     """
@@ -42,14 +42,17 @@ class HopfieldNet:
       self.computeInputValue(updatingNodeIdx),
       0
     )
-    
 
     if self.isStuckInAttractor():
       self.safeguardCounter += 1
+    else:
+      self.safeguardCounter = 0
     
     safeguardThresholdCoefficient = 3
     if self.safeguardCounter >= self.nodesNumber*safeguardThresholdCoefficient:
       raise StopIteration("Stuck in an attractor")
+
+    return updatingNodeIdx
   
   def __learnStep(self):
     """
@@ -59,10 +62,12 @@ class HopfieldNet:
     if i != j:
       self.nodeWeights[i][j] += (2*self.nodeValues[0][i] - 1) * (2*self.nodeValues[0][j] - 1)
       self.nodeWeights[j][i] += (2*self.nodeValues[0][i] - 1) * (2*self.nodeValues[0][j] - 1)
+
+      return i, j
   
   def __learningIndicesGenerator(self) -> Iterator:
     for i in range(self.nodesNumber):
-      for j in range(self.nodesNumber):
+      for j in range(i, self.nodesNumber):
         yield i, j
   
   def __runIndexGenerator(self) -> Iterator:
