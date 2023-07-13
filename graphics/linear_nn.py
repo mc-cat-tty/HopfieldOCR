@@ -27,9 +27,22 @@ class LinearNN:
         self.nodes[i]: {"fill_color": BLUE, "radius": 0.5} for i in activeNodes
       },
       edge_config = {
-        (self.nodes[i], self.nodes[j]): {
-          "stroke_color": GREEN
-        } for i in activeNodes for j in activeNodes
+        edge: {
+          "stroke_color": GREEN if int(
+            self.net.nodeWeights[
+              int(re.findall(r'\d+', edge[0])[0])
+            ][
+              int(re.findall(r'\d+', edge[1])[0])
+            ]) > 0 else (
+              WHITE if int(
+              self.net.nodeWeights[
+                int(re.findall(r'\d+', edge[0])[0])
+              ][
+                int(re.findall(r'\d+', edge[1])[0])
+              ]) == 0
+              else RED
+            )
+        } for edge in self.edges
       }
     )
 

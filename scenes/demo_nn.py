@@ -10,6 +10,7 @@ class DemoNN(Scene):
     titleTxt = Text("Toy model demo").to_edge(UP)
     learningTxt = Text("Learning phase", font_size=30).next_to(titleTxt, DOWN)
     inferringTxt = Text("Inferring phase", font_size=30).next_to(titleTxt, DOWN)
+    noisyPatternTxt = Text("The noisy pattern given as input will be\nled to the nearest attractor", font_size=30).to_corner(DL)
 
     self.g = self.nn.getGraph().to_corner(DR)
     self.el = self.nn.getEdgeLabels()
@@ -65,6 +66,7 @@ class DemoNN(Scene):
 
     for _ in self.hopfieldNet:  # Learning
       self.updateEdgeLabels()
+      self.updateGraph()
       self.wait()
 
     self.play(FadeOut(*self.el))    
@@ -95,7 +97,8 @@ class DemoNN(Scene):
     )
     self.play(
       Create(code.scale(0.6).to_edge(LEFT)),
-      Transform(learningTxt, inferringTxt)
+      Transform(learningTxt, inferringTxt),
+      Write(noisyPatternTxt)
     )
     self.wait()
 
