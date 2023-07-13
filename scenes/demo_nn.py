@@ -7,12 +7,14 @@ class DemoNN(Scene):
     self.hopfieldNet = HopfieldNet(9)
     self.nn = LinearNN(self.hopfieldNet, 3, 3, 2.3)
 
-    title = Text("Toy model demo").to_edge(UP)
+    titleTxt = Text("Toy model demo").to_edge(UP)
+    learningTxt = Text("Learning phase", font_size=30).next_to(titleTxt, DOWN)
+    inferringTxt = Text("Inferring phase", font_size=30).next_to(titleTxt, DOWN)
 
     self.g = self.nn.getGraph().to_corner(DR)
     self.el = self.nn.getEdgeLabels()
 
-    self.play(Write(title))
+    self.play(Write(titleTxt))
     self.add(self.g)
     self.add(*self.el)
     self.wait()
@@ -45,7 +47,10 @@ class DemoNN(Scene):
       insert_line_no = True
     )
     self.play(Unwrite(vanNet))
-    self.play(Create(code.scale(0.6).to_edge(LEFT)))
+    self.play(
+      Create(code.scale(0.6).to_edge(LEFT)),
+      Create(learningTxt)
+    )
     self.wait()
 
     self.hopfieldNet.withMode(NetworkMode.LEARN).withPattern(
@@ -88,7 +93,10 @@ class DemoNN(Scene):
       background_stroke_width = 1,
       insert_line_no = True
     )
-    self.play(Create(code.scale(0.6).to_edge(LEFT)))
+    self.play(
+      Create(code.scale(0.6).to_edge(LEFT)),
+      Transform(learningTxt, inferringTxt)
+    )
     self.wait()
 
     self.hopfieldNet.withMode(NetworkMode.INFER).withPattern(
