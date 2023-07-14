@@ -1,8 +1,9 @@
 from manim import *
 from graphics.linear_nn import *
 from lib.hopfield import *
+from nn_scene import *
 
-class DemoNN(Scene):
+class DemoNN(NNScene):
   def construct(self):
     self.hopfieldNet = HopfieldNet(9)
     self.nn = LinearNN(self.hopfieldNet, 3, 3, 2.3)
@@ -28,8 +29,8 @@ class DemoNN(Scene):
       code = """
       N: int = 9
 
-      hopfieldNetwork = HopfieldNetwork(neuronsNumber = 9)
-        .withMode(LEARN)
+      hopfieldNetwork = HopfieldNetwork(neuronsNumber = 9) \
+        .withMode(LEARN) \
         .withPattern(X_PATTERN)
       
       A: numpy.ndarray = hopfieldNetwork.nodeValues
@@ -75,8 +76,8 @@ class DemoNN(Scene):
     self.play(Uncreate(code))
     code = Code(
       code = """
-      hopfieldNetwork
-        .withMode(INFER)
+      hopfieldNetwork \
+        .withMode(INFER) \
         .withPattern(RANDOM_PATTERN)
       
       SAFEGUARD_INTERATIONS: int = N * 3
@@ -126,13 +127,3 @@ class DemoNN(Scene):
       )
       self.updateGraph()
       self.wait()
-  
-  def updateGraph(self):
-    self.remove(self.g)
-    self.g = self.nn.getGraph().to_corner(DR)
-    self.add(self.g)
-  
-  def updateEdgeLabels(self):
-    self.remove(*self.el)
-    self.el = self.nn.getEdgeLabels()
-    self.add(*self.el)

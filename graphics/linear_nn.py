@@ -5,7 +5,7 @@ from typing import List
 from random import random
 
 class LinearNN:
-  def __init__(self, network: hopfield.HopfieldNet, cols: int, rows: int, scale = 3):
+  def __init__(self, network: hopfield.HopfieldNet, cols: int, rows: int, scale = 3, radius = 0.5, showLabels = True):
     self.net = network
     self.nodes = [f"a{i}" for i in range(network.nodesNumber)]
     self.edges = [(self.nodes[i], self.nodes[j]) for i in range(network.nodesNumber) for j in range(network.nodesNumber) if i > j]
@@ -13,6 +13,8 @@ class LinearNN:
       [self.nodes[cols*j + i] for i in range(cols)] for j in range(rows)
     ]
     self.scale = scale
+    self.radius = radius
+    self.showLabels = showLabels
   
   def getGraph(self) -> Graph:
     activeNodes = [i for i in range(self.net.nodesNumber) if self.net.nodeValues[0][i] == 1]
@@ -22,9 +24,9 @@ class LinearNN:
       partitions = self.partitions,
       layout = 'partite',
       layout_scale = self.scale,
-      labels = True,
-      vertex_config = {"radius": 0.5} | {
-        self.nodes[i]: {"fill_color": BLUE, "radius": 0.5} for i in activeNodes
+      labels = self.showLabels,
+      vertex_config = {"radius": self.radius, "stroke_color": BLACK, "stroke_width": 2} | {
+        self.nodes[i]: {"fill_color": BLUE, "radius": self.radius} for i in activeNodes
       },
       edge_config = {
         edge: {
