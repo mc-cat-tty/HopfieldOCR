@@ -114,7 +114,9 @@ class DemoOcr(NNScene):
     self.line = self.potentialAxes.plot_line_graph(t, E, add_vertex_dots=False)
 
     self.updateGraph()
-    self.add(self.potentialAxes, self.labels)
-    self.play(Create(self.potentialAxes))
-    self.add(self.potentialAxes, self.line)
+    self.play(
+      Create(self.potentialAxes),
+      Create(self.labels),
+      Create(self.line)
+    )
     self.wait(2)
