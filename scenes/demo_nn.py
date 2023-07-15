@@ -9,7 +9,7 @@ class DemoNN(NNScene):
     self.nn = LinearNN(self.hopfieldNet, 3, 3, 2.3)
 
     titleTxt = Text("Toy model demo").to_edge(UP)
-    learningTxt = Text("Learning phase", font_size=30).next_to(titleTxt, DOWN)
+    learningTxt = Text("Hebbian learning", font_size=30).next_to(titleTxt, DOWN)
     inferringTxt = Text("Inferring phase", font_size=30).next_to(titleTxt, DOWN)
 
     self.g = self.nn.getGraph().to_corner(DR)
