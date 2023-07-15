@@ -99,11 +99,19 @@ class EnergyLandscape(ThreeDScene):
     self.hopfieldNet.withPattern(prevPattern)
 
     self.add_fixed_in_frame_mobjects(title)
+    hammingDistCaption = Text(
+        """
+        On the XY plane a toroidal surface is represented as a series of
+        network configurations with a hamming distance of 1
+        """, font_size = 15
+      )
+    self.add_fixed_in_frame_mobjects(self.g, hammingDistCaption.next_to(axes, DOWN).shift(UP))
     self.play(
       FadeIn(axes),
       FadeIn(z_label),
       FadeIn(*graphs),
-      Write(title)
+      Write(title),
+      Write(hammingDistCaption)
     )
     self.wait(0.5)
 
@@ -113,8 +121,13 @@ class EnergyLandscape(ThreeDScene):
     self.begin_ambient_camera_rotation(90*DEGREES/80, about='phi')
   
     
+    footerTxt = Text("Learning a pattern is the process of modelling the energy landscape of the network", font_size = 30).to_edge(DOWN)
     self.add_fixed_in_frame_mobjects(self.g.to_edge(RIGHT))
-    self.play(FadeIn(surface))
+    self.add_fixed_in_frame_mobjects(footerTxt)
+    self.play(
+      FadeIn(surface),
+      Write(footerTxt)
+    )
     self.wait(0.5)
 
     for _ in self.hopfieldNet \
@@ -144,13 +157,12 @@ class EnergyLandscape(ThreeDScene):
       
       self.remove(self.g)
       self.g = self.nn.getGraph().to_edge(RIGHT)
-      self.add_fixed_in_frame_mobjects(self.g)
       self.add(surface, axes)
 
       self.wait(2)
     
     self.wait(5)
-
+    
     # Second pattern
     self.move_camera(phi=50 * DEGREES, theta=-90 * DEGREES, zoom=0.8, run_time=1.5)
     self.begin_ambient_camera_rotation(90*DEGREES/5, about='theta')
