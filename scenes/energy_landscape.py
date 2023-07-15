@@ -60,7 +60,7 @@ class EnergyLandscape(ThreeDScene):
   def construct(self):
     title = Text("Energy Landscape Visualization").to_edge(UP)
     self.hopfieldNet = HopfieldNet(4)
-    self.nn = LinearNN(self.hopfieldNet, 2, 2, 2, 0.8, True)
+    self.nn = LinearNN(self.hopfieldNet, 2, 2, 1.8, 0.8, True)
     self.g = self.nn.getGraph()
 
     axes = ThreeDAxes(
@@ -105,7 +105,7 @@ class EnergyLandscape(ThreeDScene):
         network configurations with a hamming distance of 1
         """, font_size = 15
       )
-    self.add_fixed_in_frame_mobjects(self.g, hammingDistCaption.next_to(axes, DOWN).shift(UP))
+    self.add_fixed_in_frame_mobjects(hammingDistCaption.next_to(axes, DOWN).shift(UP*0.7))
     self.play(
       FadeIn(axes),
       FadeIn(z_label),
@@ -121,7 +121,7 @@ class EnergyLandscape(ThreeDScene):
     self.begin_ambient_camera_rotation(90*DEGREES/80, about='phi')
   
     
-    footerTxt = Text("Learning a pattern is the process of modelling the energy landscape of the network", font_size = 30).to_edge(DOWN)
+    footerTxt = Text("Learning a pattern is the process of modelling the energy landscape of the network", font_size = 30).to_edge(DOWN).shift(DOWN*0.4)
     self.add_fixed_in_frame_mobjects(self.g.to_edge(RIGHT))
     self.add_fixed_in_frame_mobjects(footerTxt)
     self.play(
@@ -157,12 +157,13 @@ class EnergyLandscape(ThreeDScene):
       
       self.remove(self.g)
       self.g = self.nn.getGraph().to_edge(RIGHT)
+      self.add_fixed_in_frame_mobjects(self.g)
       self.add(surface, axes)
 
       self.wait(2)
     
     self.wait(5)
-    
+    return
     # Second pattern
     self.move_camera(phi=50 * DEGREES, theta=-90 * DEGREES, zoom=0.8, run_time=1.5)
     self.begin_ambient_camera_rotation(90*DEGREES/5, about='theta')
