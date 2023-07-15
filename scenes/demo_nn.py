@@ -11,7 +11,6 @@ class DemoNN(NNScene):
     titleTxt = Text("Toy model demo").to_edge(UP)
     learningTxt = Text("Learning phase", font_size=30).next_to(titleTxt, DOWN)
     inferringTxt = Text("Inferring phase", font_size=30).next_to(titleTxt, DOWN)
-    noisyPatternTxt = Text("The noisy pattern given as input will be\nled to the nearest attractor", font_size=30).to_corner(DL)
 
     self.g = self.nn.getGraph().to_corner(DR)
     self.el = self.nn.getEdgeLabels()
@@ -29,8 +28,8 @@ class DemoNN(NNScene):
       code = """
       N: int = 9
 
-      hopfieldNetwork = HopfieldNetwork(neuronsNumber = 9) \
-        .withMode(LEARN) \
+      hopfieldNetwork = HopfieldNetwork(neuronsNumber = 9) \\
+        .withMode(LEARN) \\
         .withPattern(X_PATTERN)
       
       A: numpy.ndarray = hopfieldNetwork.nodeValues
@@ -76,8 +75,8 @@ class DemoNN(NNScene):
     self.play(Uncreate(code))
     code = Code(
       code = """
-      hopfieldNetwork \
-        .withMode(INFER) \
+      hopfieldNetwork \\
+        .withMode(INFER) \\
         .withPattern(RANDOM_PATTERN)
       
       SAFEGUARD_INTERATIONS: int = N * 3
@@ -95,11 +94,40 @@ class DemoNN(NNScene):
       background_stroke_color = WHITE,
       background_stroke_width = 1,
       insert_line_no = True
+    ).scale(0.6).to_edge(LEFT + UP)
+    potentialAxes = Axes(
+      x_range = [0, 60, 6],
+      y_range = [0, -11, 2],
+      x_length = 4,
+      y_length = 2.5
+    ).next_to(code, DOWN).shift(DOWN)
+    labels = potentialAxes.get_axis_labels(
+      Text("Iter").scale(0.4),
+      Text("Energy").scale(0.4)
     )
+    self.line = None
+    self.energyVal = None
+    noisyPatternTxt = Text(
+      """
+      The noisy pattern given as input will be
+      led to the nearest attractor.
+      Network's potential energy will
+      decrease towards the potential well.
+      """, font_size=30).next_to(code, DOWN).shift(DOWN)
+
     self.play(
-      Create(code.scale(0.6).to_edge(LEFT)),
+      Create(code),
       Transform(learningTxt, inferringTxt),
+      learningTxt.animate.shift(RIGHT*3.5),
+      titleTxt.animate.shift(RIGHT*3.5),
       Write(noisyPatternTxt)
+    )
+    self.wait(3)
+
+    self.play(Unwrite(noisyPatternTxt))
+    self.play(
+      Create(potentialAxes),
+      Create(labels)
     )
     self.wait()
 
@@ -113,6 +141,9 @@ class DemoNN(NNScene):
         0, 0, 1
       ]]
     )
+
+    E = []
+    it = [0]
     for idx in self.hopfieldNet:  # Inferring
       inputVal = int(self.hopfieldNet.computeInputValue(idx)[0])
       self.play(
@@ -125,5 +156,18 @@ class DemoNN(NNScene):
           ).next_to(code, DOWN)
         )
       )
+      it.append(it[-1] + 1)
+      E.append(self.hopfieldNet.computeEnergy())
+      if self.line is not None:
+        self.remove(self.line)
+      if self.energyVal is not None:
+        self.remove(self.energyVal)
+      self.line = potentialAxes.plot_line_graph(it, E, add_vertex_dots=False)
+      if len(it) >= 3:
+        self.energyVal = Text(f"{E[-1]}", font_size = 15, color = YELLOW)
+        self.add(self.energyVal.next_to(
+          self.line.get_corner(DR)
+        ))
+      self.add(self.line)
       self.updateGraph()
       self.wait()
