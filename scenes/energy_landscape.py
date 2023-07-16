@@ -113,7 +113,7 @@ class EnergyLandscape(ThreeDScene):
       Write(title),
       Write(hammingDistCaption)
     )
-    self.wait(0.5)
+    # self.wait(0.5)
 
     # First pattern
     self.move_camera(phi=50 * DEGREES, theta=-90 * DEGREES, zoom=0.8, run_time=1.5)
@@ -128,7 +128,7 @@ class EnergyLandscape(ThreeDScene):
       FadeIn(surface),
       Write(footerTxt)
     )
-    self.wait(0.5)
+    # self.wait(0.5)
 
     for _ in self.hopfieldNet \
       .withMode(NetworkMode.LEARN) \
@@ -160,10 +160,20 @@ class EnergyLandscape(ThreeDScene):
       self.add_fixed_in_frame_mobjects(self.g)
       self.add(surface, axes)
 
-      self.wait(2)
+      # self.wait(2)
     
+    # self.wait(5)
+
+    ball_path = FunctionGraph(lambda x: 2, x_range = (0, 2)).rotate(90*DEGREES)
+    ball = Sphere(radius = 0.3, color = BLUE).move_to(ball_path[0])
+    self.play(GrowFromCenter(ball))
+    self.play(
+      MoveAlongPath(ball, ball_path),
+      run_time = 3,
+      rate_function = linear
+    )
     self.wait(5)
-    return
+    
     # Second pattern
     self.move_camera(phi=50 * DEGREES, theta=-90 * DEGREES, zoom=0.8, run_time=1.5)
     self.begin_ambient_camera_rotation(90*DEGREES/5, about='theta')
