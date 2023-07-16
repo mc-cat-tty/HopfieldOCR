@@ -25,7 +25,7 @@ class DemoOcr(NNScene):
     self.updateGraph()
     self.wait()
     img = self.fromNumbersToCanvas(2)
-    caption = Text("*These patterns are not (too) overlapping", font_size = 20).next_to(img, DOWN)
+    caption = Text("*These patterns are barely overlapping", font_size = 20).next_to(img, DOWN)
     self.play(
       FadeIn(img),
       FadeIn(caption),
