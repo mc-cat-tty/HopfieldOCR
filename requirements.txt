@@ -49,8 +49,6 @@ pycairo==1.24.0
 pydub==0.25.1
 pyglet==2.0.8
 Pygments==2.15.1
-pyobjc-core==9.2
-pyobjc-framework-Cocoa==9.2
 pyparsing==3.0.9
 pyrr==0.10.3
 python-dateutil==2.8.2
@@ -64,10 +62,6 @@ six==1.16.0
 skia-pathops==0.7.4
 srt==3.5.3
 svgelements==1.9.5
-tensorboard==2.13.0
-tensorboard-data-server==0.7.1
-tensorflow-estimator==2.13.0
-tensorflow-macos==2.13.0
 termcolor==2.3.0
 tqdm==4.65.0
 typing_extensions==4.5.0
