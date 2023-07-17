@@ -80,6 +80,7 @@ class EnergyLandscape(ThreeDScene):
       v_range = (-2, 2),
       resolution = (4, 4)
     ).set_fill_by_value(axes = axes, colorscale=[(RED_C, -0.5), (YELLOW_C, 0), (GREEN_C, 0.5)], axis=2)
+    
     z_label = axes.get_z_axis_label(Tex("Potential energy"))
     self.set_camera_orientation(zoom = 0.4)
 
@@ -139,8 +140,7 @@ class EnergyLandscape(ThreeDScene):
     self.add_fixed_in_frame_mobjects(footerTxt)
     self.play(
       FadeIn(self.surface),
-      Write(footerTxt),
-      Transform(self.subtitle, Text("Learning pattern 2", font_size = 30).next_to(self.title, DOWN))
+      Write(footerTxt)
     )
     self.wait(0.5)
 
@@ -199,7 +199,11 @@ class EnergyLandscape(ThreeDScene):
       resolution = (4, 4)
     ) \
     .set_fill_by_value(axes = axes, colorscale=[(RED_C, -0.5), (YELLOW_C, 0), (GREEN_C, 0.5)], axis=2)
-    self.play(FadeIn(self.surface))
+    
+    self.play(
+      FadeIn(self.surface),
+      Transform(self.subtitle, Text("Learning pattern 2", font_size = 30).next_to(self.title, DOWN))
+    )
     self.wait(0.5)
     
     for _ in self.hopfieldNet \
