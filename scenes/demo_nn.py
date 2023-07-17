@@ -105,6 +105,16 @@ class DemoNN(NNScene):
       Text("Iter").scale(0.4),
       Text("Energy").scale(0.4)
     )
+
+    self.hopfieldNet.withMode(NetworkMode.INFER).withPattern(
+      [[
+        1, 0, 0,
+        0, 0, 0,
+        0, 0, 1
+      ]]
+    )
+    self.updateGraph()
+
     self.line = None
     self.energyVal = None
     noisyPatternTxt = Text(
@@ -116,8 +126,10 @@ class DemoNN(NNScene):
       """, font_size=30).next_to(code, DOWN).shift(DOWN)
 
     self.play(
-      Create(code),
       Transform(learningTxt, inferringTxt),
+    )
+    self.play(
+      Create(code),
       learningTxt.animate.shift(RIGHT*3.5),
       titleTxt.animate.shift(RIGHT*3.5),
       Write(noisyPatternTxt)
@@ -133,14 +145,6 @@ class DemoNN(NNScene):
 
     inputValue = Text(f"Neuron {0} input value: {10}", font_size=30).next_to(code, DOWN)
     self.add(inputValue)
-
-    self.hopfieldNet.withMode(NetworkMode.INFER).withPattern(
-      [[
-        1, 0, 0,
-        0, 0, 0,
-        0, 0, 1
-      ]]
-    )
 
     E = []
     it = [0]
