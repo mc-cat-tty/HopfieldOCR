@@ -59,7 +59,8 @@ def paramSurface(x, y, net: HopfieldNet):
 
 class EnergyLandscape(ThreeDScene):
   def construct(self):
-    title = Text("Energy Landscape Visualization").to_edge(UP)
+    self.title = Text("Energy Landscape Visualization").to_edge(UP)
+    self.subtitle = Text("Learning pattern 1", font_size = 30).next_to(self.title, DOWN)
     self.hopfieldNet = HopfieldNet(4)
     self.nn = LinearNN(self.hopfieldNet, 2, 2, 1.8, 0.8, True)
     self.g = self.nn.getGraph()
@@ -99,27 +100,31 @@ class EnergyLandscape(ThreeDScene):
         )
     self.hopfieldNet.withPattern(prevPattern)
 
-    self.add_fixed_in_frame_mobjects(title)
+    self.add_fixed_in_frame_mobjects(self.title)
     hammingDistCaption = Text(
         """
         On the XY plane a toroidal surface is represented as a series of
         network configurations with a hamming distance of 1
         """, font_size = 15
       )
-    self.add_fixed_in_frame_mobjects(hammingDistCaption.next_to(axes, DOWN).shift(UP*0.7))
+    self.add_fixed_in_frame_mobjects(
+      hammingDistCaption.next_to(axes, DOWN).shift(UP*0.7),
+      self.subtitle
+    )
     self.play(
       FadeIn(axes),
       FadeIn(z_label),
       FadeIn(*graphs),
-      Write(title),
+      Write(self.title),
+      Write(self.subtitle),
       Write(hammingDistCaption)
     )
     self.wait(0.5)
 
     #First pattern
     self.move_camera(phi=50 * DEGREES, theta=-90 * DEGREES, zoom=0.8, run_time=1.5)
-    self.begin_ambient_camera_rotation(90*DEGREES/21, about='theta')
-    self.begin_ambient_camera_rotation(90*DEGREES/120, about='phi')
+    self.begin_ambient_camera_rotation(90*DEGREES/16, about='theta')
+    self.begin_ambient_camera_rotation(90*DEGREES/60, about='phi')
 
     self.surface = Surface(
       func = lambda x, y: axes.c2p(*paramSurface(x, y, self.hopfieldNet)),
@@ -134,7 +139,8 @@ class EnergyLandscape(ThreeDScene):
     self.add_fixed_in_frame_mobjects(footerTxt)
     self.play(
       FadeIn(self.surface),
-      Write(footerTxt)
+      Write(footerTxt),
+      Transform(self.subtitle, Text("Learning pattern 2", font_size = 30).next_to(self.title, DOWN))
     )
     self.wait(0.5)
 
@@ -174,11 +180,15 @@ class EnergyLandscape(ThreeDScene):
     self.wait(5)
 
     # Second pattern
+    self.stop_ambient_camera_rotation(about='phi')
+    self.stop_ambient_camera_rotation(about='theta')
     self.move_camera(phi=50 * DEGREES, theta=-90 * DEGREES, zoom=0.8, run_time=1.5)
+    self.begin_ambient_camera_rotation(90*DEGREES/16, about='theta')
+    self.begin_ambient_camera_rotation(90*DEGREES/120, about='phi')
   
     self.remove(self.g, self.surface)
     self.hopfieldNet = HopfieldNet(4)
-    self.nn = LinearNN(self.hopfieldNet, 2, 2, 2, 0.8, True)
+    self.nn = LinearNN(self.hopfieldNet, 2, 2, 1.8, 0.8, True)
     self.g = self.nn.getGraph().to_edge(RIGHT)
     self.add_fixed_in_frame_mobjects(self.g)
 
@@ -231,6 +241,9 @@ class EnergyLandscape(ThreeDScene):
 
 
   def rollBall1(self):
+    self.play(Transform(self.subtitle, Text("Free running", font_size = 30).next_to(self.title, DOWN)))
+    self.wait()
+
     sPoints = self.surface.get_all_points()
     f = interp2d(sPoints[:, 0], sPoints[:, 1], sPoints[:, 2], kind = 'cubic')
     
@@ -246,9 +259,17 @@ class EnergyLandscape(ThreeDScene):
       .shift((0, -ballRadius/2, ballRadius/2)) \
       .set_shade_in_3d(True) \
       .set_z_index(100)
+    
     ball = Sphere(radius = ballRadius, color = BLUE).move_to(ballPath[0]).set_z_index(100)
+    
+    def rollUpdater(obj: Sphere):
+      obj.rotate(-3*DEGREES, axis = Y_AXIS)
+
+    ball.add_updater(rollUpdater)
     self.stop_ambient_camera_rotation(about = 'theta')
     self.stop_ambient_camera_rotation(about = 'phi')
+    self.begin_ambient_camera_rotation(90*DEGREES/105, about='theta')
+    self.begin_ambient_camera_rotation(90*DEGREES/600, about='phi')
     self.play(
       MoveAlongPath(ball, ballPath),
       run_time = 10,
