@@ -6,7 +6,10 @@ class Infra1(Scene):
     r1 = Text(
       """
       A Hopfield network is a trivial kind of NN whose main application is pattern reconstruction.
-      """
+      """,
+      t2c = {
+        "pattern reconstruction": GREEN
+      }
     ).shift(UP)
     r2 = Text(
       """
@@ -17,7 +20,10 @@ class Infra1(Scene):
       """
       Two updating strategies are generally available: synchronous and asynchronous updating;
       in this example, a synchronous neuron updating has been chosen.
-      """
+      """,
+      t2c = {
+        "synchronous neuron updating": GREEN
+      }
     ).next_to(r2, DOWN, buff=0.2)
     self.play(LaggedStart(*[Write(r) for r in (r1, r2, r3)], lag_ratio = 0.7))
     self.wait(8)
