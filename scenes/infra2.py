@@ -1,6 +1,6 @@
 from manim import *
 
-class Infra1(Scene):
+class Infra2(Scene):
   def construct(self):
     Text.set_default(font_size = 22)
     r1 = Text(
