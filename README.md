@@ -1,6 +1,8 @@
 # Hopfield OCR
 Hopfield network implementation + visualization of its energy landscape as seen in Artificial Systems module ([https://github.com/mc-cat-tty/SistemiArtificiali/](https://github.com/mc-cat-tty/SistemiArtificiali/))
 
+See end result at: https://youtu.be/NGi88z9YH8U
+
 ## Preview
 ![Energy landscape with spurious patterns](img/img1.png)
 ![Energy landscape and NN](img/img2.png)
