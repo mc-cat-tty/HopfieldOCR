@@ -25,7 +25,7 @@ class Infra1(Scene):
         "synchronous neuron updating": GREEN
       }
     ).next_to(r2, DOWN, buff=0.2)
-    self.play(LaggedStart(*[Write(r) for r in (r1, r2, r3)], lag_ratio = 0.7))
-    self.wait(8)
+    self.play(LaggedStart(*[Write(r) for r in (r1, r2, r3)], lag_ratio = 0.3))
+    self.wait(13)
     self.play(*[FadeOut(r) for r in (r1, r2, r3)])
     self.wait(.5)
