@@ -19,10 +19,10 @@ class Infra1(Scene):
     r3 = Text(
       """
       Two updating strategies are generally available: synchronous and asynchronous updating;
-      in this example, a synchronous neuron updating has been chosen.
+      in this example, an asynchronous neuron updating has been chosen.
       """,
       t2c = {
-        "synchronous neuron updating": GREEN
+        "asynchronous neuron updating": GREEN
       }
     ).next_to(r2, DOWN, buff=0.2)
     self.play(LaggedStart(*[Write(r) for r in (r1, r2, r3)], lag_ratio = 0.3))
